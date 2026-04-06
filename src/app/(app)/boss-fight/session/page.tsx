@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { AnimatePresence } from "framer-motion";
 import { Question } from "@/types/question";
 import { ResultsSummary } from "@/components/quiz/ResultsSummary";
+import { AchievementUnlockOverlay } from "@/components/achievements/AchievementUnlockOverlay";
 import { AchievementDef } from "@/types/gamification";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +35,8 @@ export default function BossFightSessionPage() {
   const [result, setResult] = useState<FinalResult | null>(null);
   const [review, setReview] = useState<ReviewItem[]>([]);
   const [showReview, setShowReview] = useState(false);
+  const [overlayQueue, setOverlayQueue] = useState<AchievementDef[]>([]);
+  const [pendingResult, setPendingResult] = useState<FinalResult | null>(null);
 
   useEffect(() => {
     fetch("/api/quiz/session", {
@@ -62,8 +66,9 @@ export default function BossFightSessionPage() {
     setSubmitted(true);
 
     const reviewItems: ReviewItem[] = [];
+    const collectedAchievements: AchievementDef[] = [];
 
-    // Submit all answers
+    // Submit all answers, collect any answer-time achievements
     for (let i = 0; i < questions.length; i++) {
       const selected = answers[i] ?? 0;
       const res = await fetch("/api/quiz/answer", {
@@ -73,6 +78,9 @@ export default function BossFightSessionPage() {
       });
       const data = await res.json();
       reviewItems.push({ question: questions[i], selected, correct: data.isCorrect });
+      if (data.achievementsUnlocked?.length) {
+        collectedAchievements.push(...data.achievementsUnlocked);
+      }
     }
 
     setReview(reviewItems);
@@ -84,7 +92,25 @@ export default function BossFightSessionPage() {
       body: JSON.stringify({ sessionId }),
     });
     const finalResult = await completeRes.json();
-    setResult(finalResult);
+
+    if (finalResult.achievementsUnlocked?.length) {
+      collectedAchievements.push(...finalResult.achievementsUnlocked);
+    }
+
+    if (collectedAchievements.length > 0) {
+      setPendingResult(finalResult);
+      setOverlayQueue(collectedAchievements);
+    } else {
+      setResult(finalResult);
+    }
+  }
+
+  function handleOverlayComplete() {
+    setOverlayQueue([]);
+    if (pendingResult) {
+      setResult(pendingResult);
+      setPendingResult(null);
+    }
   }
 
   if (loading) {
@@ -92,6 +118,17 @@ export default function BossFightSessionPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-cyber-danger font-mono animate-pulse">Preparing boss encounter...</div>
       </div>
+    );
+  }
+
+  if (overlayQueue.length > 0) {
+    return (
+      <AnimatePresence>
+        <AchievementUnlockOverlay
+          achievements={overlayQueue}
+          onComplete={handleOverlayComplete}
+        />
+      </AnimatePresence>
     );
   }
 
