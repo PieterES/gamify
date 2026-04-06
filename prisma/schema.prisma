@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+
+  xp            Int       @default(0)
+  level         Int       @default(1)
+  streakDays    Int       @default(0)
+  lastStudiedAt DateTime?
+
+  sessions        QuizSession[]
+  answers         UserAnswer[]
+  achievements    UserAchievement[]
+  domainProgress  DomainProgress[]
+  bossFights      BossFight[]
+}
+
+model DomainProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  domain        String
+  totalAnswered Int      @default(0)
+  totalCorrect  Int      @default(0)
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, domain])
+}
+
+model QuizSession {
+  id          String    @id @default(cuid())
+  userId      String
+  domain      String?
+  topic       String?
+  mode        String
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  score       Int?
+  total       Int?
+  xpEarned    Int       @default(0)
+
+  user    User         @relation(fields: [userId], references: [id])
+  answers UserAnswer[]
+}
+
+model UserAnswer {
+  id          String   @id @default(cuid())
+  userId      String
+  sessionId   String
+  questionId  String
+  selectedIdx Int
+  isCorrect   Boolean
+  timeSpentMs Int?
+  answeredAt  DateTime @default(now())
+
+  user    User        @relation(fields: [userId], references: [id])
+  session QuizSession @relation(fields: [sessionId], references: [id])
+}
+
+model Achievement {
+  id          String @id @default(cuid())
+  key         String @unique
+  name        String
+  description String
+  iconPath    String
+  xpReward    Int    @default(0)
+  rarity      String @default("common")
+
+  users UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id])
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+}
+
+model BossFight {
+  id          String    @id @default(cuid())
+  userId      String
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  timeLimitMs Int       @default(3600000)
+  timeUsedMs  Int?
+  score       Int?
+  passed      Boolean?
+  xpEarned    Int       @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+}
