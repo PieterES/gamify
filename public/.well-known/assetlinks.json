@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "net.trackerapp.gamify",
+      "package_name": "net.tracker_app.gamify.twa",
       "sha256_cert_fingerprints": [
         "20:08:41:ED:D2:59:D7:AD:DF:0E:18:AF:A5:F7:34:29:D7:3A:E2:48:32:49:1E:16:46:32:A8:3F:39:B7:48:95",
         "E3:C9:B1:0D:67:E5:25:57:62:0A:70:99:0A:42:E8:54:39:0C:C2:1F:50:D0:F9:4C:D7:92:AA:26:DE:29:DE:33"
