@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -12,6 +13,8 @@ import {
   Trophy,
   User,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
 
 const navItems = [
@@ -26,9 +29,13 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [open, setOpen] = useState(false);
 
-  return (
-    <div className="w-64 min-h-screen bg-cyber-surface border-r border-cyber-border flex flex-col">
+  // Close on route change
+  useEffect(() => { setOpen(false); }, [pathname]);
+
+  const navContent = (
+    <>
       {/* Logo */}
       <div className="p-6 border-b border-cyber-border">
         <div className="text-cyber-primary font-mono font-bold text-xl text-glow-cyan">AZ-500</div>
@@ -65,6 +72,33 @@ export function Sidebar() {
           Sign out
         </button>
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <div className="hidden md:flex w-64 min-h-screen bg-cyber-surface border-r border-cyber-border flex-col">
+        {navContent}
+      </div>
+
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 h-14 bg-cyber-surface border-b border-cyber-border">
+        <div className="text-cyber-primary font-mono font-bold text-lg text-glow-cyan">AZ-500</div>
+        <button onClick={() => setOpen(!open)} className="text-cyber-muted hover:text-cyber-text">
+          {open ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
+
+      {/* Mobile drawer */}
+      {open && (
+        <div className="md:hidden fixed inset-0 z-30 flex">
+          <div className="w-64 bg-cyber-surface border-r border-cyber-border flex flex-col mt-14">
+            {navContent}
+          </div>
+          <div className="flex-1 bg-black/50" onClick={() => setOpen(false)} />
+        </div>
+      )}
+    </>
   );
 }
