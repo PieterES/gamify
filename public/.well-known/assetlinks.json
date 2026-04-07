@@ -2,7 +2,7 @@
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "com.az500.twa",
+    "package_name": "net.trackerapp.gamify",
     "sha256_cert_fingerprints": ["REPLACE_WITH_SHA256_FROM_BUBBLEWRAP"]
   }
 }]
