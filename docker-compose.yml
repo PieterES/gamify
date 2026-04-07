@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    container_name: gamify-app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "file:/app/data/prod.db"
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3004}
+    volumes:
+      - gamify-data:/app/data
+    ports:
+      - "3004:3004"
+
+volumes:
+  gamify-data:
+    name: gamify-data
