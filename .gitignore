@@ -38,3 +38,22 @@ next-env.d.ts
 /src/generated/prisma
 
 .env
+
+# Android / Bubblewrap
+/app/
+/build/
+/gradle/
+gradlew
+gradlew.bat
+build.gradle
+settings.gradle
+gradle.properties
+twa-manifest.json
+android.keystore
+*.apk
+*.aab
+*.idsig
+manifest-checksum.txt
+store_icon.png
+hs_err_pid*.log
+dev.db
