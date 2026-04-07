@@ -6,7 +6,7 @@ services:
     environment:
       DATABASE_URL: "file:/app/data/prod.db"
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://gamify.tracker-app.net}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3004}
     volumes:
       - gamify-data:/app/data
     ports:
