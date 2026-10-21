@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { getDomainConfig } from "./certifications";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -16,23 +17,11 @@ export function getPercentage(correct: number, total: number): number {
 }
 
 export function getDomainLabel(domain: string): string {
-  const labels: Record<string, string> = {
-    identity: "Identity & Access",
-    networking: "Secure Networking",
-    compute: "Compute, Storage & DB",
-    defender: "Defender & Sentinel",
-  };
-  return labels[domain] ?? domain;
+  return getDomainConfig(domain)?.label ?? domain;
 }
 
 export function getDomainColor(domain: string): string {
-  const colors: Record<string, string> = {
-    identity: "#7c3aed",
-    networking: "#00d4ff",
-    compute: "#ffb800",
-    defender: "#00ff88",
-  };
-  return colors[domain] ?? "#64748b";
+  return getDomainConfig(domain)?.color ?? "#64748b";
 }
 
 export function formatDuration(ms: number): string {

@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { selectQuestionsForQuiz, selectBossFightQuestions } from "@/lib/questions/selector";
 import { Domain } from "@/types/question";
+import { DEFAULT_CERT, getCert, isCertId } from "@/lib/certifications";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -11,11 +12,12 @@ export async function POST(req: NextRequest) {
 
   const userId = (session.user as { id: string }).id;
   const body = await req.json();
-  const { domain, topic, mode } = body as { domain?: Domain; topic?: string; mode: string };
+  const { domain, topic, mode, cert } = body as { domain?: Domain; topic?: string; mode: string; cert?: string };
+  const certId = isCertId(cert) ? cert : DEFAULT_CERT;
 
   let questions;
   if (mode === "boss") {
-    questions = selectBossFightQuestions();
+    questions = selectBossFightQuestions(certId);
   } else if (domain) {
     questions = selectQuestionsForQuiz({ domain, topic, count: 10 });
   } else {
@@ -26,7 +28,8 @@ export async function POST(req: NextRequest) {
     data: {
       userId,
       domain: domain ?? null,
-      topic: topic ?? null,
+      // Boss fights have no domain, so record which exam they simulated in topic
+      topic: mode === "boss" ? getCert(certId).code : topic ?? null,
       mode,
       total: questions.length,
     },

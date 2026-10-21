@@ -1,24 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getDomainColor, getDomainLabel } from "@/lib/utils";
 import { getTopicsForDomain } from "@/lib/questions/loader";
 import { Domain } from "@/types/question";
 import { Brain } from "lucide-react";
-
-const DOMAINS: Domain[] = ["identity", "networking", "compute", "defender"];
-const DOMAIN_WEIGHTS: Record<Domain, string> = {
-  identity: "15–20%",
-  networking: "20–25%",
-  compute: "20–25%",
-  defender: "30–35%",
-};
+import { useCert } from "@/components/CertProvider";
 
 export default function QuizHubPage() {
   const router = useRouter();
   const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string>("");
+  const { cert } = useCert();
+
+  // Reset the selection when the user switches certificate
+  useEffect(() => { setSelectedDomain(null); setSelectedTopic(""); }, [cert.id]);
 
   const topics = selectedDomain ? getTopicsForDomain(selectedDomain) : [];
 
@@ -36,12 +33,12 @@ export default function QuizHubPage() {
           <Brain size={24} className="text-cyber-primary" />
           Quiz Mode
         </h1>
-        <p className="text-cyber-muted text-sm mt-1">Select a domain to start a 10-question quiz</p>
+        <p className="text-cyber-muted text-sm mt-1">{cert.code} · Select a domain to start a 10-question quiz</p>
       </div>
 
       {/* Domain cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {DOMAINS.map((domain) => {
+        {cert.domains.map(({ id: domain, weight }) => {
           const color = getDomainColor(domain);
           const isSelected = selectedDomain === domain;
           return (
@@ -56,7 +53,7 @@ export default function QuizHubPage() {
               <div className="flex justify-between items-start mb-2">
                 <span className="font-semibold text-cyber-text">{getDomainLabel(domain)}</span>
                 <span className="text-xs font-mono px-2 py-0.5 rounded-full border" style={{ color, borderColor: color }}>
-                  {DOMAIN_WEIGHTS[domain]}
+                  {weight}
                 </span>
               </div>
               <div

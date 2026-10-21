@@ -39,10 +39,10 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="text-4xl font-bold text-cyber-primary text-glow-cyan font-mono mb-2">
-            AZ-500
+            AZ-500 · AI-300
           </div>
           <div className="text-cyber-muted text-sm tracking-widest uppercase">
-            Security Training Arena
+            Azure Cert Training Arena
           </div>
         </div>
 

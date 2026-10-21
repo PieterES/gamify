@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getDomainColor, getDomainLabel } from "@/lib/utils";
+import { useCert } from "@/components/CertProvider";
 import { User } from "lucide-react";
 
 interface ProgressData {
@@ -12,11 +13,12 @@ interface ProgressData {
   totalCorrect: number;
   accuracy: number;
   achievements: { key: string; name: string; rarity: string; unlockedAt: string }[];
-  recentSessions: { id: string; domain?: string; mode: string; score?: number; total?: number; xpEarned: number; startedAt: string; completedAt?: string }[];
+  recentSessions: { id: string; domain?: string; topic?: string; mode: string; score?: number; total?: number; xpEarned: number; startedAt: string; completedAt?: string }[];
 }
 
 export default function ProfilePage() {
   const [data, setData] = useState<ProgressData | null>(null);
+  const { cert } = useCert();
 
   useEffect(() => {
     fetch("/api/user/progress").then((r) => r.json()).then(setData);
@@ -54,9 +56,9 @@ export default function ProfilePage() {
 
       {/* Domain breakdown */}
       <div className="cyber-card p-5">
-        <h2 className="text-sm font-semibold text-cyber-text mb-4">Domain Breakdown</h2>
+        <h2 className="text-sm font-semibold text-cyber-text mb-4">{cert.code} Domain Breakdown</h2>
         <div className="space-y-3">
-          {["identity", "networking", "compute", "defender"].map((domain) => {
+          {cert.domains.map(({ id: domain }) => {
             const dp = data.domainProgress.find((d) => d.domain === domain);
             const color = getDomainColor(domain);
             return (
@@ -88,7 +90,7 @@ export default function ProfilePage() {
                   {new Date(s.startedAt).toLocaleDateString()}
                 </span>
                 <span className="text-cyber-text">
-                  {s.mode === "boss" ? "Boss Fight" : s.domain ? getDomainLabel(s.domain) : "Mixed"}
+                  {s.mode === "boss" ? `Boss Fight${s.topic ? ` · ${s.topic}` : ""}` : s.domain ? getDomainLabel(s.domain) : "Mixed"}
                 </span>
                 {s.score !== null && s.total && (
                   <span className="text-cyber-muted text-xs">

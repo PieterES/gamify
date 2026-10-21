@@ -1,18 +1,26 @@
-import { Question, Domain } from "@/types/question";
+import { Question, Domain, CertId } from "@/types/question";
+import { getCert } from "@/lib/certifications";
 import { identityQuestions } from "@/data/questions/domain1-identity";
 import { networkingQuestions } from "@/data/questions/domain2-networking";
 import { computeQuestions } from "@/data/questions/domain3-compute";
 import { defenderQuestions } from "@/data/questions/domain4-defender";
+import { ai300Questions } from "@/data/questions/ai300";
 
 export const ALL_QUESTIONS: Question[] = [
   ...identityQuestions,
   ...networkingQuestions,
   ...computeQuestions,
   ...defenderQuestions,
+  ...ai300Questions,
 ];
 
 export function getQuestionsByDomain(domain: Domain): Question[] {
   return ALL_QUESTIONS.filter((q) => q.domain === domain);
+}
+
+export function getQuestionsByCert(certId: CertId): Question[] {
+  const domains = new Set(getCert(certId).domains.map((d) => d.id));
+  return ALL_QUESTIONS.filter((q) => domains.has(q.domain));
 }
 
 export function getQuestionsByTopic(domain: Domain, topic: string): Question[] {

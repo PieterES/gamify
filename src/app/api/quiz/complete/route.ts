@@ -6,6 +6,7 @@ import { calcSessionCompletionBonus, checkLevelUp } from "@/lib/gamification/xp"
 import { calcNewStreak } from "@/lib/gamification/streak";
 import { ACHIEVEMENTS } from "@/lib/gamification/achievements";
 import { getXPForNextLevel } from "@/lib/gamification/levelNames";
+import { CERTIFICATIONS } from "@/lib/certifications";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -122,11 +123,12 @@ async function checkSessionAchievements(
     }
   }
 
-  // All domains mastered
-  if (!earnedKeys.has("all_domains_mastered")) {
-    const allMasterKeys = ["domain_master_identity", "domain_master_networking", "domain_master_compute", "domain_master_defender"];
+  // All domains of a certificate mastered
+  for (const cert of Object.values(CERTIFICATIONS)) {
+    if (earnedKeys.has(cert.masterKey)) continue;
+    const allMasterKeys = cert.domains.map((d) => `domain_master_${d.id}`);
     const allEarned = allMasterKeys.every((k) => earnedKeys.has(k) || toUnlock.includes(k));
-    if (allEarned) toUnlock.push("all_domains_mastered");
+    if (allEarned) toUnlock.push(cert.masterKey);
   }
 
   // Unlock in DB

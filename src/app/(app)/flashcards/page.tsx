@@ -2,13 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { getDomainColor, getDomainLabel } from "@/lib/utils";
-import { Domain } from "@/types/question";
 import { Layers } from "lucide-react";
-
-const DOMAINS: Domain[] = ["identity", "networking", "compute", "defender"];
+import { useCert } from "@/components/CertProvider";
 
 export default function FlashcardsHubPage() {
   const router = useRouter();
+  const { cert } = useCert();
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -17,11 +16,11 @@ export default function FlashcardsHubPage() {
           <Layers size={24} className="text-cyber-accent" />
           Flashcards
         </h1>
-        <p className="text-cyber-muted text-sm mt-1">Flip through cards to review key concepts</p>
+        <p className="text-cyber-muted text-sm mt-1">{cert.code} · Flip through cards to review key concepts</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {DOMAINS.map((domain) => {
+        {cert.domains.map(({ id: domain }) => {
           const color = getDomainColor(domain);
           return (
             <button

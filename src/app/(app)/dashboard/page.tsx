@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Brain, Layers, Swords, Trophy } from "lucide-react";
 import { getDomainColor, getDomainLabel } from "@/lib/utils";
+import { useCert } from "@/components/CertProvider";
 
 interface ProgressData {
   user: { name?: string; level: number; levelName: string; xp: number; streakDays: number };
@@ -12,11 +13,12 @@ interface ProgressData {
   totalAnswered: number;
   accuracy: number;
   achievements: { key: string; name: string }[];
-  recentSessions: { id: string; domain?: string; mode: string; score?: number; total?: number; xpEarned: number; startedAt: string }[];
+  recentSessions: { id: string; domain?: string; topic?: string; mode: string; score?: number; total?: number; xpEarned: number; startedAt: string }[];
 }
 
 export default function DashboardPage() {
   const [data, setData] = useState<ProgressData | null>(null);
+  const { cert } = useCert();
 
   useEffect(() => {
     fetch("/api/user/progress").then((r) => r.json()).then(setData);
@@ -30,7 +32,7 @@ export default function DashboardPage() {
     );
   }
 
-  const domains = ["identity", "networking", "compute", "defender"];
+  const domains = cert.domains.map((d) => d.id);
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
@@ -78,7 +80,7 @@ export default function DashboardPage() {
 
       {/* Domain Progress */}
       <div>
-        <h2 className="text-lg font-semibold text-cyber-text mb-4">Domain Progress</h2>
+        <h2 className="text-lg font-semibold text-cyber-text mb-4">{cert.code} Domain Progress</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {domains.map((domain) => {
             const dp = data.domainProgress.find((d) => d.domain === domain);
@@ -136,7 +138,7 @@ export default function DashboardPage() {
               <div key={s.id} className="cyber-card p-3 flex items-center justify-between">
                 <div>
                   <span className="text-cyber-text text-sm">
-                    {s.domain ? getDomainLabel(s.domain) : "Boss Fight"}
+                    {s.domain ? getDomainLabel(s.domain) : `Boss Fight${s.topic ? ` · ${s.topic}` : ""}`}
                   </span>
                   {s.score != null && s.total != null && (
                     <span className="text-cyber-muted text-xs ml-2">
