@@ -5,6 +5,7 @@ import { networkingQuestions } from "@/data/questions/domain2-networking";
 import { computeQuestions } from "@/data/questions/domain3-compute";
 import { defenderQuestions } from "@/data/questions/domain4-defender";
 import { ai300Questions } from "@/data/questions/ai300";
+import { awsQuestions } from "@/data/questions/aws";
 
 export const ALL_QUESTIONS: Question[] = [
   ...identityQuestions,
@@ -12,6 +13,7 @@ export const ALL_QUESTIONS: Question[] = [
   ...computeQuestions,
   ...defenderQuestions,
   ...ai300Questions,
+  ...awsQuestions,
 ];
 
 export function getQuestionsByDomain(domain: Domain): Question[] {

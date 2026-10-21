@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AchievementDef } from "@/types/gamification";
+import { getCertAchievementEmoji } from "@/lib/certifications";
 
 const RARITY_CONFIG = {
   common: {
@@ -45,12 +46,6 @@ const ACHIEVEMENT_EMOJI: Record<string, string> = {
   domain_master_compute: "💻",
   domain_master_defender: "⚔️",
   all_domains_mastered: "👑",
-  "domain_master_mlops-infra": "🏗️",
-  "domain_master_ml-lifecycle": "🔁",
-  "domain_master_genaiops-infra": "🧠",
-  "domain_master_genai-quality": "🔭",
-  "domain_master_genai-optimize": "⚙️",
-  ai300_all_domains_mastered: "🤖",
   boss_slayer: "🐲",
   perfect_boss: "✨",
   streak_7: "📅",
@@ -102,7 +97,7 @@ export function AchievementUnlockOverlay({ achievements, onComplete }: Props) {
   if (!current) return null;
 
   const rarity = RARITY_CONFIG[current.rarity];
-  const emoji = ACHIEVEMENT_EMOJI[current.key] ?? "🏅";
+  const emoji = ACHIEVEMENT_EMOJI[current.key] ?? getCertAchievementEmoji(current.key) ?? "🏅";
 
   return (
     <motion.div

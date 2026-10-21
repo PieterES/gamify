@@ -6,7 +6,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useCert } from "@/components/CertProvider";
-import { CERT_IDS, CERTIFICATIONS } from "@/lib/certifications";
+import { CERT_IDS, CERTIFICATIONS, PROVIDERS, isCertId } from "@/lib/certifications";
 import {
   LayoutDashboard,
   BookOpen,
@@ -47,22 +47,23 @@ export function Sidebar() {
         <div className="text-cyber-muted text-xs tracking-widest uppercase mt-1">{cert.subtitle}</div>
 
         {/* Certificate switcher */}
-        <div className="mt-4 grid grid-cols-2 gap-1 p-1 rounded-lg bg-cyber-bg border border-cyber-border">
-          {CERT_IDS.map((id) => (
-            <button
-              key={id}
-              onClick={() => setCertId(id)}
-              className={cn(
-                "py-1.5 rounded-md text-xs font-mono transition-colors",
-                id === certId
-                  ? "bg-cyber-primary/15 text-cyber-primary"
-                  : "text-cyber-muted hover:text-cyber-text"
-              )}
-            >
-              {CERTIFICATIONS[id].code}
-            </button>
+        <label className="sr-only" htmlFor="cert-switcher">Certificate</label>
+        <select
+          id="cert-switcher"
+          value={certId}
+          onChange={(e) => { if (isCertId(e.target.value)) setCertId(e.target.value); }}
+          className="mt-4 w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-cyber-text text-xs font-mono focus:outline-none focus:border-cyber-primary"
+        >
+          {PROVIDERS.map((provider) => (
+            <optgroup key={provider} label={provider}>
+              {CERT_IDS.filter((id) => CERTIFICATIONS[id].provider === provider).map((id) => (
+                <option key={id} value={id}>
+                  {CERTIFICATIONS[id].code} · {CERTIFICATIONS[id].name}
+                </option>
+              ))}
+            </optgroup>
           ))}
-        </div>
+        </select>
       </div>
 
       {/* Nav */}
