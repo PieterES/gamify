@@ -5,8 +5,11 @@ import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useCert } from "@/components/CertProvider";
+import { CERT_IDS, CERTIFICATIONS, PROVIDERS, isCertId } from "@/lib/certifications";
 import {
   LayoutDashboard,
+  BookOpen,
   Brain,
   Layers,
   Swords,
@@ -19,6 +22,7 @@ import {
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/notes", label: "Study Notes", icon: BookOpen },
   { href: "/quiz", label: "Quiz", icon: Brain },
   { href: "/flashcards", label: "Flashcards", icon: Layers },
   { href: "/boss-fight", label: "Boss Fight", icon: Swords },
@@ -30,6 +34,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+  const { cert, certId, setCertId } = useCert();
 
   // Close on route change
   useEffect(() => { setOpen(false); }, [pathname]);
@@ -38,8 +43,27 @@ export function Sidebar() {
     <>
       {/* Logo */}
       <div className="p-6 border-b border-cyber-border">
-        <div className="text-cyber-primary font-mono font-bold text-xl text-glow-cyan">AZ-500</div>
-        <div className="text-cyber-muted text-xs tracking-widest uppercase mt-1">Training Arena</div>
+        <div className="text-cyber-primary font-mono font-bold text-xl text-glow-cyan">{cert.code}</div>
+        <div className="text-cyber-muted text-xs tracking-widest uppercase mt-1">{cert.subtitle}</div>
+
+        {/* Certificate switcher */}
+        <label className="sr-only" htmlFor="cert-switcher">Certificate</label>
+        <select
+          id="cert-switcher"
+          value={certId}
+          onChange={(e) => { if (isCertId(e.target.value)) setCertId(e.target.value); }}
+          className="mt-4 w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-cyber-text text-xs font-mono focus:outline-none focus:border-cyber-primary"
+        >
+          {PROVIDERS.map((provider) => (
+            <optgroup key={provider} label={provider}>
+              {CERT_IDS.filter((id) => CERTIFICATIONS[id].provider === provider).map((id) => (
+                <option key={id} value={id}>
+                  {CERTIFICATIONS[id].code} · {CERTIFICATIONS[id].name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
       </div>
 
       {/* Nav */}
@@ -84,7 +108,7 @@ export function Sidebar() {
 
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 h-14 bg-cyber-surface border-b border-cyber-border">
-        <div className="text-cyber-primary font-mono font-bold text-lg text-glow-cyan">AZ-500</div>
+        <div className="text-cyber-primary font-mono font-bold text-lg text-glow-cyan">{cert.code}</div>
         <button onClick={() => setOpen(!open)} className="text-cyber-muted hover:text-cyber-text">
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>

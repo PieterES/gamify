@@ -4,10 +4,10 @@ import { SessionProvider } from "@/components/SessionProvider";
 import { SwRegister } from "@/components/SwRegister";
 
 export const metadata: Metadata = {
-  title: "AZ-500 Training Arena",
-  description: "Gamified study app for Microsoft Azure Security Engineer certification",
+  title: "Cert Training Arena",
+  description: "Gamified study app for Azure and AWS certifications",
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "AZ-500" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Cert Arena" },
 };
 
 export const viewport: Viewport = {

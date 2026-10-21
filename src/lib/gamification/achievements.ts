@@ -1,4 +1,28 @@
 import { AchievementDef } from "@/types/gamification";
+import { CERTIFICATIONS } from "@/lib/certifications";
+
+// Domain master + "all domains" badges for every certificate except AZ-500,
+// whose badges are written out by hand below (keys kept for existing users).
+const CERT_ACHIEVEMENTS: AchievementDef[] = Object.values(CERTIFICATIONS)
+  .filter((cert) => cert.id !== "az500")
+  .flatMap((cert): AchievementDef[] => [
+    ...cert.domains.map((d): AchievementDef => ({
+      key: `domain_master_${d.id}`,
+      name: d.badgeName ?? `${d.label} Master`,
+      description: `90%+ correct on ${d.label} (${cert.code}, min 20 answered)`,
+      iconPath: `/badges/domain_master_${d.id}.svg`,
+      xpReward: 200,
+      rarity: "epic",
+    })),
+    {
+      key: cert.masterKey,
+      name: cert.masterName,
+      description: `Earn all ${cert.domains.length} ${cert.code} Domain Master badges`,
+      iconPath: `/badges/${cert.masterKey}.svg`,
+      xpReward: 500,
+      rarity: "legendary",
+    },
+  ]);
 
 export const ACHIEVEMENTS: AchievementDef[] = [
   {
@@ -73,6 +97,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     xpReward: 500,
     rarity: "legendary",
   },
+  ...CERT_ACHIEVEMENTS,
   {
     key: "boss_slayer",
     name: "Boss Slayer",

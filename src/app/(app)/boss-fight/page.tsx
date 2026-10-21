@@ -2,9 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { Swords, Clock } from "lucide-react";
+import { useCert } from "@/components/CertProvider";
 
 export default function BossFightIntroPage() {
   const router = useRouter();
+  const { cert } = useCert();
+  const weights = cert.domains
+    .map((d) => `${d.label.toLowerCase()} ${Math.round((d.bossCount / 50) * 100)}%`)
+    .join(", ");
 
   return (
     <div className="max-w-2xl mx-auto py-12 space-y-8 text-center">
@@ -17,7 +22,7 @@ export default function BossFightIntroPage() {
 
       <div>
         <h1 className="text-4xl font-bold text-cyber-danger font-mono mb-2">BOSS FIGHT</h1>
-        <p className="text-cyber-muted">Face the full AZ-500 exam simulation</p>
+        <p className="text-cyber-muted">Face the full {cert.code} exam simulation</p>
       </div>
 
       {/* Rules */}
@@ -25,8 +30,8 @@ export default function BossFightIntroPage() {
         <h2 className="text-cyber-text font-semibold">Rules of Engagement</h2>
         <div className="space-y-3">
           {[
-            { icon: "📝", text: "50 questions across all 4 exam domains" },
-            { icon: "⚖️", text: "Questions weighted by exam percentage (identity 18%, networking 26%, compute 24%, defender 32%)" },
+            { icon: "📝", text: `50 questions across all ${cert.domains.length} exam domains` },
+            { icon: "⚖️", text: `Questions weighted by exam percentage (${weights})` },
             { icon: "🚫", text: "No explanations until all questions are answered" },
             { icon: "💰", text: "All XP is doubled during Boss Fight" },
             { icon: "🏆", text: "Score 70% or higher to defeat the boss" },
@@ -45,7 +50,7 @@ export default function BossFightIntroPage() {
       </div>
 
       <button
-        onClick={() => router.push("/boss-fight/session")}
+        onClick={() => router.push(`/boss-fight/session?cert=${cert.id}`)}
         className="w-full bg-cyber-danger text-white font-bold py-4 rounded-lg hover:bg-cyber-danger/90 transition-all glow-red text-lg"
       >
         Enter the Arena

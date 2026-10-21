@@ -1,4 +1,5 @@
-import { Question, Domain } from "@/types/question";
+import { Question, Domain, CertId } from "@/types/question";
+import { DEFAULT_CERT, getCert } from "@/lib/certifications";
 import { getQuestionsByDomain } from "./loader";
 
 function shuffle<T>(arr: T[]): T[] {
@@ -22,19 +23,12 @@ export function selectQuestionsForQuiz(opts: {
   return shuffle(pool).slice(0, opts.count ?? 10);
 }
 
-// Boss Fight: 50 questions weighted by domain exam weight
-export function selectBossFightQuestions(): Question[] {
-  const weights: Record<Domain, number> = {
-    identity: 9,
-    networking: 13,
-    compute: 12,
-    defender: 16,
-  };
-
+// Boss Fight: 50 questions weighted by each domain's exam weight
+export function selectBossFightQuestions(certId: CertId = DEFAULT_CERT): Question[] {
   const selected: Question[] = [];
-  for (const [domain, count] of Object.entries(weights) as [Domain, number][]) {
-    const pool = shuffle(getQuestionsByDomain(domain));
-    selected.push(...pool.slice(0, count));
+  for (const { id, bossCount } of getCert(certId).domains) {
+    const pool = shuffle(getQuestionsByDomain(id));
+    selected.push(...pool.slice(0, bossCount));
   }
   return shuffle(selected);
 }

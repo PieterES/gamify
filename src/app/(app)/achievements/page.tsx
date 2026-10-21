@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ACHIEVEMENTS } from "@/lib/gamification/achievements";
 import { cn } from "@/lib/utils";
 import { Trophy } from "lucide-react";
+import { getCertAchievementEmoji } from "@/lib/certifications";
 
 interface UserAchievement { key: string; name: string; unlockedAt: string }
 
@@ -73,7 +74,7 @@ export default function AchievementsPage() {
               )}
             >
               <div className="flex items-start justify-between mb-2">
-                <div className="text-2xl">{isEarned ? "🏅" : "🔒"}</div>
+                <div className="text-2xl">{isEarned ? getCertAchievementEmoji(a.key) ?? "🏅" : "🔒"}</div>
                 <span className={cn("text-xs px-2 py-0.5 rounded-full capitalize",
                   a.rarity === "legendary" ? "bg-cyber-warning/20 text-cyber-warning" :
                   a.rarity === "epic" ? "bg-cyber-accent/20 text-cyber-accent" :

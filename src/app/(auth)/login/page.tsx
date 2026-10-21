@@ -38,10 +38,10 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="text-4xl font-bold text-cyber-primary text-glow-cyan font-mono mb-2">
-            AZ-500
+            CERT ARENA
           </div>
           <div className="text-cyber-muted text-sm tracking-widest uppercase">
-            Security Training Arena
+            Azure · AWS Training Arena
           </div>
         </div>
 

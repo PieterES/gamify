@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AchievementDef } from "@/types/gamification";
+import { getCertAchievementEmoji } from "@/lib/certifications";
 
 const RARITY_CONFIG = {
   common: {
@@ -96,7 +97,7 @@ export function AchievementUnlockOverlay({ achievements, onComplete }: Props) {
   if (!current) return null;
 
   const rarity = RARITY_CONFIG[current.rarity];
-  const emoji = ACHIEVEMENT_EMOJI[current.key] ?? "🏅";
+  const emoji = ACHIEVEMENT_EMOJI[current.key] ?? getCertAchievementEmoji(current.key) ?? "🏅";
 
   return (
     <motion.div

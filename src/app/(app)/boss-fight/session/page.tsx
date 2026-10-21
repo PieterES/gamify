@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import { Question } from "@/types/question";
 import { ResultsSummary } from "@/components/quiz/ResultsSummary";
@@ -25,7 +26,8 @@ interface ReviewItem {
   correct: boolean;
 }
 
-export default function BossFightSessionPage() {
+function BossFightSessionContent() {
+  const cert = useSearchParams().get("cert") ?? undefined;
   const [loading, setLoading] = useState(true);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -42,7 +44,7 @@ export default function BossFightSessionPage() {
     fetch("/api/quiz/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mode: "boss" }),
+      body: JSON.stringify({ mode: "boss", cert }),
     })
       .then((r) => r.json())
       .then((data) => {
@@ -51,7 +53,7 @@ export default function BossFightSessionPage() {
         setAnswers(new Array(data.questions.length).fill(null));
         setLoading(false);
       });
-  }, []);
+  }, [cert]);
 
   const handleSelect = useCallback((idx: number) => {
     setAnswers((prev) => {
@@ -262,5 +264,13 @@ export default function BossFightSessionPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function BossFightSessionPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="text-cyber-danger font-mono animate-pulse">Preparing boss encounter...</div></div>}>
+      <BossFightSessionContent />
+    </Suspense>
   );
 }

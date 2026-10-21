@@ -1,7 +1,7 @@
 {
-  "name": "AZ-500 Training Arena",
-  "short_name": "AZ-500",
-  "description": "Gamified study app for Microsoft Azure Security Engineer certification",
+  "name": "Cert Training Arena",
+  "short_name": "Cert Arena",
+  "description": "Gamified study app for Azure and AWS certifications",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",
